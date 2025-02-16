@@ -1,0 +1,269 @@
+basePath: /
+definitions:
+  models.Song:
+    properties:
+      group:
+        type: string
+      id:
+        type: integer
+      link:
+        type: string
+      release_date:
+        type: string
+      song:
+        type: string
+      verses:
+        items:
+          $ref: '#/definitions/models.Verse'
+        type: array
+    type: object
+  models.Verse:
+    properties:
+      id:
+        type: integer
+      song_id:
+        type: integer
+      text:
+        type: string
+      verse_number:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для работы с музыкальной библиотекой.
+  license:
+    name: Unlicensed
+  title: Music Library API
+  version: "1.0"
+paths:
+  /songs:
+    get:
+      description: Возвращает список песен с пагинацией и фильтрацией.
+      parameters:
+      - description: Количество песен на странице
+        in: query
+        name: limit
+        type: integer
+      - description: Смещение от начала списка
+        in: query
+        name: offset
+        type: integer
+      - description: Название группы
+        in: query
+        name: group
+        type: string
+      - description: Название песни
+        in: query
+        name: song
+        type: string
+      - description: Дата выпуска
+        in: query
+        name: release_date
+        type: string
+      - description: Ссылка
+        in: query
+        name: link
+        type: string
+      responses:
+        "200":
+          description: Список песен
+          schema:
+            items:
+              $ref: '#/definitions/models.Song'
+            type: array
+        "500":
+          description: Ошибка получения песен
+          schema:
+            type: string
+      summary: Получить список песен
+      tags:
+      - songs
+    post:
+      consumes:
+      - application/json
+      description: Создает новую песню в библиотеке.
+      parameters:
+      - description: Данные песни
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/models.Song'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ID созданной песни
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Неверный формат JSON
+          schema:
+            type: string
+        "500":
+          description: Ошибка создания песни
+          schema:
+            type: string
+      summary: Создать песню
+      tags:
+      - songs
+  /songs/{id}:
+    delete:
+      description: Удаляет песню по ее ID.
+      parameters:
+      - description: ID песни
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Статус удаления
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Неверный ID
+          schema:
+            type: string
+        "500":
+          description: Ошибка удаления песни
+          schema:
+            type: string
+      summary: Удалить песню
+      tags:
+      - songs
+    get:
+      description: Возвращает песню по ее ID.
+      parameters:
+      - description: ID песни
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Данные песни
+          schema:
+            $ref: '#/definitions/models.Song'
+        "400":
+          description: Неверный ID
+          schema:
+            type: string
+        "500":
+          description: Ошибка получения песни
+          schema:
+            type: string
+      summary: Получить песню по ID
+      tags:
+      - songs
+    put:
+      description: Обновляет данные песни.
+      parameters:
+      - description: ID песни
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новые данные песни
+        in: body
+        name: song
+        required: true
+        schema:
+          $ref: '#/definitions/models.Song'
+      responses:
+        "200":
+          description: Статус обновления
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Неверный ID или формат JSON
+          schema:
+            type: string
+        "500":
+          description: Ошибка обновления песни
+          schema:
+            type: string
+      summary: Обновить песню
+      tags:
+      - songs
+  /songs/{id}/verses:
+    get:
+      description: Возвращает куплеты песни с пагинацией.
+      parameters:
+      - description: ID песни
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Количество куплетов на странице
+        in: query
+        name: limit
+        type: integer
+      - description: Смещение от начала списка
+        in: query
+        name: offset
+        type: integer
+      responses:
+        "200":
+          description: Список куплетов
+          schema:
+            items:
+              $ref: '#/definitions/models.Verse'
+            type: array
+        "400":
+          description: Неверный ID песни или параметры пагинации
+          schema:
+            type: string
+        "500":
+          description: Ошибка при получении куплетов
+          schema:
+            type: string
+      summary: Получить куплеты
+      tags:
+      - verses
+    post:
+      consumes:
+      - application/json
+      description: Добавляет куплеты к песне.
+      parameters:
+      - description: ID песни
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Список куплетов
+        in: body
+        name: verses
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/models.Verse'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Куплеты добавлены
+          schema:
+            type: string
+        "400":
+          description: Неверный ID песни или формат данных
+          schema:
+            type: string
+        "500":
+          description: Ошибка при добавлении куплетов
+          schema:
+            type: string
+      summary: Добавить куплеты
+      tags:
+      - verses
+schemes:
+- http
+swagger: "2.0"
