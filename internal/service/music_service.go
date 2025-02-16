@@ -113,10 +113,12 @@ func (s *MusicServiceImpl) DeleteSong(ctx context.Context, id int) error {
 	return s.db.DeleteSong(ctx, id)
 }
 
+// AddVerses добавляет куплеты к песне.
 func (s *MusicServiceImpl) AddVerses(ctx context.Context, songID int, verses []models.Verse) error {
 	return s.db.AddVerses(ctx, songID, verses)
 }
 
+// GetVerses получает куплеты песни с пагинацией.
 func (s *MusicServiceImpl) GetVerses(ctx context.Context, songID, limit, offset int) ([]models.Verse, error) {
 	return s.db.GetVersesBySongID(ctx, songID, limit, offset)
 }
